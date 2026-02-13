@@ -1,0 +1,10 @@
+{
+  "name": "@mcp-voice/dsp",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "dependencies": {
+    "@mcp-voice/core": "0.0.1"
+  }
+}
