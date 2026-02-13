@@ -7,5 +7,6 @@ export * from "./schema/ErrorCodesV1";
 export * from "./canonical";
 export * from "./interfaces";
 export * from "./config";
+export * from "./schema/TuningV1.js";
 
 
