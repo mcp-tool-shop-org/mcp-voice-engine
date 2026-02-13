@@ -60,16 +60,17 @@ export class PitchShifterRefV1 implements IPitchShifter {
              }
 
              // 3. Calculate Target Pitch
-             const targetCents = target.targetCentsQ[frameIdx]; 
+             const targetValCents = target.targetCentsQ[frameIdx] / 1000.0; // Assume Milli-Cents in Q
              let inputF0Mhz = f0Track.f0MhzQ[frameIdx];
              if (inputF0Mhz <= 0) inputF0Mhz = 100000; 
 
              const strength = envelope.strengthQ[frameIdx] / 10000;
              
              const inputHz = inputF0Mhz / 1000;
-             const inputCents = 69000 + 12000 * Math.log2(inputHz / 440);
+             // Base: MIDI 69 (A4 440) = 6900 Cents
+             const inputCents = 6900 + 1200 * Math.log2(inputHz / 440);
              
-             const desiredCents = inputCents + (targetCents/10 - inputCents) * strength;
+             const desiredCents = inputCents + (targetValCents - inputCents) * strength;
              const shiftCents = (desiredCents - inputCents);
              const ratio = Math.pow(2, shiftCents / 1200);
 
@@ -84,20 +85,49 @@ export class PitchShifterRefV1 implements IPitchShifter {
                  // Grain Length Strategy
                  // Preserve Formants: Length = 2 * InputPeriod
                  // Shift Formants (Chipmunk): Length = 2 * OutputPeriod
-                 const pBase = useChipmunk ? (sr / outputF0) : (sr / inputHz);
+                 const pInput = sr / inputHz;
+                 const pBase = useChipmunk ? (sr / outputF0) : pInput;
                  const grainLen = Math.floor(2 * pBase);
                  
                  const overlapGain = inputHz / outputF0; // Simple density comp
 
+                 // Refinement: Find local peak (Pitch Mark) within one period of input
+                 // This aligns the grain to the waveform phase, crucial for coherence
+                 let center = i;
+                 const searchWin = Math.min(Math.floor(pInput / 2), 512);
+                 let maxVal = -1;
+                 let bestOffset = 0;
+                 
+                 for(let o = -searchWin; o <= searchWin; o++) {
+                    const idx = i + o;
+                    if (idx >= 0 && idx < inData.length) {
+                        const val = Math.abs(inData[idx]);
+                        if (val > maxVal) {
+                            maxVal = val;
+                            bestOffset = o;
+                        }
+                    }
+                 }
+                 center = i + bestOffset;
+
                  for (let k = 0; k < grainLen; k++) {
                      const pos = i - Math.floor(grainLen/2) + k;
-                     if (pos >= 0 && pos < outData.length && pos < inData.length) {
+                     // Read from Time-Aligned Input (center)
+                     // Input Grain is centered at 'center'
+                     // Window is centered at 'center'
+                     // k goes 0..grainLen. 
+                     // readPos should be relative to center.
+                     // readPos = center - grainLen/2 + k
+                     const readPos = center - Math.floor(grainLen/2) + k;
+
+                     if (pos >= 0 && pos < outData.length && readPos >= 0 && readPos < inData.length) {
                          const w = 0.5 - 0.5 * Math.cos(2 * Math.PI * k / grainLen);
-                         outData[pos] += inData[pos] * w * overlapGain; 
+                         outData[pos] += inData[readPos] * w * overlapGain; 
                      }
                  }
              }
         }
+        // End Loop
         
         // 5. Formant / Artifact Guard
         const result: AudioBufferV1 = { ...audio, data: [outData] };
