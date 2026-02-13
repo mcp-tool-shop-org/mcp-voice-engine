@@ -1,5 +1,6 @@
 import { AudioBufferV1 } from "./SynthesisV1";
 import { AnalysisPitchRequestV1, AnalysisVoicingRequestV1 } from "./AnalysisV1";
+import { PitchShiftRequestV1 } from "./TransformationV1";
 
 export interface DspAutotuneRequestV1 {
     type: "autotune";
@@ -17,12 +18,18 @@ export interface DspCrossfadeRequestV1 {
     duration: number;
 }
 
+export interface DspPitchShiftActionV1 {
+    type: "pitch_shift";
+    request: PitchShiftRequestV1;
+}
+
 export type DspRequestV1 = 
+    | AnalysisPitchRequestV1 
+    | AnalysisVoicingRequestV1 
     | DspAutotuneRequestV1 
-    | DspConcatRequestV1 
+    | DspConcatRequestV1
     | DspCrossfadeRequestV1
-    | AnalysisPitchRequestV1
-    | AnalysisVoicingRequestV1;
+    | DspPitchShiftActionV1;
 
 export interface DspResultV1 {
     audio: AudioBufferV1;
