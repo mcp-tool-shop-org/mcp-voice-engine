@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "declarationMap": true
+  }
+}
