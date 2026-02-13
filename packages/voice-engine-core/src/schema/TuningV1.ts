@@ -30,6 +30,56 @@ export interface TuneScoreNoteConfigV1 {
 
 export type TuneScoreV1 = TuneScoreScaleConfigV1 | TuneScoreNoteConfigV1;
 
+// Phase 5: Request & Plan Schemas
+
+export type TuningPreset = "subtle" | "natural" | "pop" | "hard" | "robot";
+
+export interface TuneRequestV1 {
+    mode: "scale" | "notes";
+    key?: string;   // e.g. "C", "F#"
+    scale?: string; // e.g. "major", "minor", "chromatic"
+    preset?: TuningPreset; // defaults to "natural"
+    overrides?: {
+        snapStrength?: number; // 0..100
+        glideMs?: number;      // 0..inf
+        retuneSpeed?: number;  // 0..100
+        consonantProtection?: number; // 0..100
+    };
+}
+
+export interface TunePlanV1 {
+    /** Resolved mode */
+    mode: "scale" | "notes";
+    
+    /** Canonicalized Scale Config */
+    scaleConfig: {
+        key: string;
+        scale: string;
+        /** Pitch classes allowed (0=C, 1=C#, ..., 11=B) */
+        allowedPitchClasses: number[];
+        /** Reference pitch info (e.g. A4=440) if needed */
+        referenceHz: number;
+    };
+    
+    /** Explicit DSP parameters */
+    parameters: {
+        /** 0..10000 */
+        snapStrengthQ: number;
+        /** 0..10000 ms (or appropriate unit) */
+        glideMsQ: number;
+        /** 0..10000 */
+        retuneSpeedQ: number;
+        /** 0..10000 - reduction of correction on low confidence */
+        consonantProtectionQ: number;
+    };
+
+    /** System/Version info for determinism */
+    meta: {
+        resolverVersion: string;
+        timestamp: number;
+    };
+}
+
 export interface TargetCurveV1 {
     sampleRateHz: number;
     frameHz: number;
@@ -50,13 +100,3 @@ export interface CorrectionEnvelopeV1 {
     glideStrengthQ?: Int16Array;
 }
 
-export interface TunePlanV1 {
-    /** The configuration/score used to generate this plan */
-    score: TuneScoreV1;
-    /** The generated target pitch curve */
-    targetCurve: TargetCurveV1;
-    /** The generated correction strength envelope */
-    correctionEnvelope: CorrectionEnvelopeV1;
-    /** Map of module IDs used to generate this plan */
-    moduleIds?: Record<string, string>;
-}

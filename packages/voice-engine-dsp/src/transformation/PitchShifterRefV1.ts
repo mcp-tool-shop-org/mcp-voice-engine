@@ -49,8 +49,12 @@ export class PitchShifterRefV1 implements IPitchShifter {
         // Output pointer
         for (let i = 0; i < outData.length; i++) {
              // 1. Determine Frame Index
-             const frameIdx = Math.floor(i / hop);
-             if (frameIdx >= frames) break;
+             let frameIdx = Math.floor(i / hop);
+             if (frameIdx >= frames) frameIdx = frames - 1;
+             if (frameIdx < 0) frameIdx = 0;
+
+             // Debug
+             // if (i === 24000) console.log(`Debug Shifter Frame: ${frameIdx}, Voiced: ${voicing.voicedQ[frameIdx]}`);
 
              // 2. Unvoiced Bypass
              const isVoiced = voicing.voicedQ[frameIdx] > 0;
@@ -78,6 +82,13 @@ export class PitchShifterRefV1 implements IPitchShifter {
              const outputF0 = inputHz * ratio;
              
              phase += outputF0 / sr;
+
+             /*
+             if (i > 24000 && i < 24005) {
+                 console.log(`Debug Shifter Loop: i=${i}, phase=${phase}, outF0=${outputF0}`);
+                 console.log(`Debug Cents: InputC=${inputCents}, TargetC=${targetValCents}, DesiredC=${desiredCents}`);
+             }
+             */
              
              if (phase >= 1) {
                  phase -= 1;
