@@ -30,4 +30,39 @@ export interface ProsodyAnalysisConfigV1 {
 
     /** Frames needed to confirm voicing exit (hangover). Default: 5. */
     voicedExitFrames?: number;
+
+    // Phase 7.2 Decomposer Config
+    /** Time constant for Center F0 smoothing in ms. Default: 30. */
+    centerSmoothingMs?: number;
+    /** Duration to fade residual in/out at edges in ms. Default: 20. */
+    residualFadeMs?: number;
+}
+
+export interface ProsodyComponentV1 {
+    frames: number;
+    /**
+     * Pitch values in Hz. 
+     * For Macro: Absolute Pitch (e.g., 440.0)
+     * For Micro: Relative Pitch Deviation (e.g., +2.5, -2.5)
+     */
+    valuesHz: Float32Array;
+}
+
+export interface F0DecompositionV1 {
+    /**
+     * The slow-moving intonation curve (Phrase + Accent).
+     * Represents the "intended" note or slide.
+     */
+    macro: ProsodyComponentV1;
+    
+    /**
+     * The fast-moving texture (Vibrato, Jitter, Flutter).
+     * Representative of voice quality and expression style.
+     */
+    micro: ProsodyComponentV1;
+
+    /**
+     * Unexplained variance or noise (optional/future use).
+     */
+    residual: ProsodyComponentV1;
 }

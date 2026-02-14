@@ -7,6 +7,7 @@ import { PitchTrackerRefV1 } from "../analysis/PitchTrackerRefV1.js";
 import { PitchShifterRefV1 } from "../transformation/PitchShifterRefV1.js";
 import { TargetCurveGenerator } from "./TargetCurveGenerator.js";
 import { CorrectionController } from "./CorrectionController.js";
+import { F0Decomposer } from "../../voice-engine-core/src/prosody/F0Decomposer.js";
 
 export class AutotuneExecutor {
     private resolver = new TunePlanResolver();
@@ -22,6 +23,7 @@ export class AutotuneExecutor {
     private curveGen = new TargetCurveGenerator();
     private envGen = new CorrectionController();
     private shifter = new PitchShifterRefV1(); // "PSOLA-lite"
+    private decomposer = new F0Decomposer();
 
     async execute(req: TuneRequestV1, audio: AudioBufferV1): Promise<AudioBufferV1> {
         // 1. Resolve Plan
@@ -29,10 +31,14 @@ export class AutotuneExecutor {
 
         // 2. Analyze Pitch
         const f0Analysis = this.tracker.analyze(audio);
-        // console.log(`Debug Analysis: ${f0Analysis.f0MhzQ.length} frames. SR: ${f0Analysis.sampleRateHz}`);
+        
+        // 3. Decompose Pitch (New in Phase 7.2)
+        // We separate macro (intonation) from micro (jitter/vibrato).
+        // This allows us to target the correction on the macro curve while preserving natural micro-fluctuations.
+        const decomposition = this.decomposer.decompose(f0Analysis);
         
         // Debug Middle Frame
-        const mid = Math.floor(f0Analysis.f0MhzQ.length / 2);
+        // const mid = Math.floor(f0Analysis.f0MhzQ.length / 2);
         // console.log(`Debug F0[${mid}]:`, f0Analysis.f0MhzQ[mid] / 1000, "Hz");
         
         // 3. Derive Voicing (Simple Threshold)
