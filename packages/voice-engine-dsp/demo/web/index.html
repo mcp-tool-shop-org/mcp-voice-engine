@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Engine DSP Demo</title>
+    <style>
+        body { font-family: system-ui, sans-serif; padding: 2rem; max-width: 800px; margin: 0 auto; }
+        .controls { margin: 2rem 0; padding: 1rem; background: #f0f0f0; border-radius: 8px; }
+        button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+        #status { margin-top: 1rem; padding: 1rem; border: 1px solid #ddd; display: none; }
+        .log { font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Voice Engine DSP Web Demo</h1>
+    <p>Phase 11.3: Web Integration Test</p>
+    
+    <div class="controls">
+        <button id="startBtn">Start Audio Engine</button>
+        <button id="stopBtn" disabled>Stop</button>
+    </div>
+
+    <div id="status"></div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

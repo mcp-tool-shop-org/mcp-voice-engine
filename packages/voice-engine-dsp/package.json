@@ -6,6 +6,12 @@
   "private": true,
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "scripts": {
+    "test:meaning": "vitest run test/streaming_golden.test.ts",
+    "test:determinism": "vitest run test/determinism_matrix.test.ts",
+    "bench:rtf": "vitest run test/rtf_benchmark.test.ts",
+    "smoke": "npx tsx tools/smoke-cli.ts"
+  },
   "dependencies": {
     "@mcp-voice/core": "0.0.1"
   }

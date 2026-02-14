@@ -11,6 +11,8 @@ import { F0Decomposer } from "../../../voice-engine-core/src/prosody/F0Decompose
 import { ProsodySegmenter } from "../../../voice-engine-core/src/prosody/ProsodySegmenter.js";
 import { PhraseBaselineModel } from "../../../voice-engine-core/src/prosody/PhraseBaselineModel.js";
 import { TargetStabilizer } from "../../../voice-engine-core/src/prosody/TargetStabilizer.js";
+import { ProsodyEventV1, ProsodyPlanV1 } from "../../../voice-engine-core/src/prosody/ProsodyV1.js";
+import { AccentRenderer } from "../prosody/AccentRenderer.js";
 import { TargetCurveV1 } from "@mcp-voice/core";
 import { 
     HARD_TUNE_PRESET, 
@@ -18,6 +20,7 @@ import {
     SUBTLE_PRESET, 
     ProsodyPresetV1 
 } from "../../../voice-engine-core/src/config/ProsodyPresets.js";
+import { resolveProsodyStyle } from "../../../voice-engine-core/src/config/ProsodyStyles.js";
 
 
 export class AutotuneExecutor {
@@ -74,9 +77,6 @@ export class AutotuneExecutor {
         // Model the declination trend of each phrase.
         const baseline = this.baselineModel.analyze(segments, decomposition.macro.valuesHz);
         
-        // Debug Phase 7 Info
-        // console.log(`[Prosody] Frames: ${frameCount}, Segments: ${segments.length}`);
-        
         // 3d. Derive Voicing (Enhanced with Segments)
         // Instead of raw heuristic, we can now use the segments to define the voicing mask.
         const voicedQ = new Uint8Array(frameCount);
@@ -115,6 +115,80 @@ export class AutotuneExecutor {
             rootOffsetCents: 0
         }, f0Analysis.frameHz);
 
+        // Phase 8: Expressive Rendering (8.4 Style Profiles)
+        const style = resolveProsodyStyle(req.style);
+        
+        if (req.events && req.events.length > 0) {
+            const frameRateHz = f0Analysis.sampleRateHz / f0Analysis.hopSamples;
+            const accentOffsets = AccentRenderer.render(req.events, frameCount, style, frameRateHz);
+            
+            // Add offsets to stabilized target
+            for (let i = 0; i < frameCount; i++) {
+                if (stabilized.noteIds[i] >= 0) {
+                    stabilized.targetCents[i] += accentOffsets[i];
+                }
+            }
+
+            // Phase 8.5: Post-Focus Compression (PFC)
+            // Reduces pitch range/variance after a strong focus event to de-accentuate specific information.
+            if (style.postFocusCompression > 0) {
+                // 1. Find the strongest accent (focus)
+                let maxStrength = 0;
+                let focusTime = -1;
+                
+                // Simple approach: global max in request
+                for (const event of req.events) {
+                    if (event.type === 'accent' && event.strength > maxStrength) {
+                         maxStrength = event.strength;
+                         focusTime = event.time;
+                    }
+                }
+
+                // Threshold to trigger PFC (e.g. > 0.5 strength)
+                if (maxStrength > 0.5 && focusTime >= 0 && focusTime < frameCount - 1) {
+                    const pfcStrength = style.postFocusCompression;
+                    
+                    // Apply compression for frames AFTER the focus event
+                    // We can retain a small buffer (e.g. 50ms) before compressing fully
+                    // But for now, let's just start compressing after focusTime + span/2 or similar?
+                    // User said: For frames t > focusTime (center).
+                    // Let's add a small grace period (e.g. 10 frames = 100ms) to let the accent finish falling.
+                    // Or just strict t > focusTime.
+                    
+                    for (let t = focusTime; t < frameCount; t++) {     
+                         // We need baseline in Cents.
+                         // baseline.baselineHz[t] -> Cents (MIDI absolute)
+                         // 440Hz = 6900 cents.
+                         // cents = 6900 + 1200 * log2(hz / 440)
+                         
+                         const bHz = baseline.baselineHz[t];
+                         if (bHz > 10) { // avoid log(0)
+                             const baselineCents = 6900 + 1200 * Math.log2(bHz / 440);
+                             
+                             // Calculate deviation of current target from baseline
+                             const currentCents = stabilized.targetCents[t];
+                             const deviation = currentCents - baselineCents;
+                             
+                             // Compress deviation
+                             // newDeviation = deviation * (1 - pfcStrength)
+                             // newTarget = baselineCents + newDeviation
+                             
+                             // Ramp-in the compression? 
+                             // Let's do a simple linear ramp over 20 frames (200ms)
+                             let ramp = 1.0;
+                             if (t < focusTime + 20) {
+                                 ramp = (t - focusTime) / 20.0;
+                             }
+                             
+                             const effectiveCompression = pfcStrength * ramp;
+                             
+                             stabilized.targetCents[t] = baselineCents + (deviation * (1 - effectiveCompression));
+                         }
+                    }
+                }
+            }
+        }
+
         // Re-construct the Final Target Curve
         // Final Target = Stabilized Intent + Micro (Vibrato)
         // Note: baseline is discarded (flattened out) if we just use Stabilized.
@@ -148,7 +222,7 @@ export class AutotuneExecutor {
                 // Unvoiced - hold last or default?
                 // Let's copy from curveGen behavior or input pitch
                 // Here we just use 0 or last. Shifter usually ignores target for unvoiced.
-                finalTargetCentsQ[i] = 0;
+                finalTargetCentsQ[i] = 0; 
             }
         }
         
