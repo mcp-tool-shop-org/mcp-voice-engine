@@ -10,6 +10,8 @@ import { CorrectionController } from "./CorrectionController.js";
 import { F0Decomposer } from "../../voice-engine-core/src/prosody/F0Decomposer.js";
 import { ProsodySegmenter } from "../../voice-engine-core/src/prosody/ProsodySegmenter.js";
 import { PhraseBaselineModel } from "../../voice-engine-core/src/prosody/PhraseBaselineModel.js";
+import { TargetStabilizer } from "../../voice-engine-core/src/prosody/TargetStabilizer.js";
+import { TargetCurveV1 } from "@mcp-voice/core";
 
 export class AutotuneExecutor {
     private resolver = new TunePlanResolver();
@@ -28,6 +30,7 @@ export class AutotuneExecutor {
     private decomposer = new F0Decomposer();
     private segmenter = new ProsodySegmenter();
     private baselineModel = new PhraseBaselineModel();
+    private stabilizer = new TargetStabilizer();
 
     async execute(req: TuneRequestV1, audio: AudioBufferV1): Promise<AudioBufferV1> {
         // 1. Resolve Plan
@@ -91,7 +94,63 @@ export class AutotuneExecutor {
         };
 
         // 4. Generate Control Curves
-        const target = this.curveGen.generate(f0Analysis, voicing, plan);
+        // Old Method:
+        // const target = this.curveGen.generate(f0Analysis, voicing, plan);
+        
+        // Phase 7.4 Target Stabilizer Integration:
+        // Stabilize the INTENT curve (macro - baseline)
+        const stabilized = this.stabilizer.stabilize(baseline.intentHz, segments, {
+            allowedPitchClasses: plan.scaleConfig?.allowedPitchClasses,
+            hysteresisCents: 15, // Default or from plan if available
+            rootOffsetCents: 0, 
+            switchRampMs: 30
+        }, f0Analysis.frameHz);
+
+        // Re-construct the Final Target Curve
+        // Final Target = Stabilized Intent + Micro (Vibrato)
+        // Note: baseline is discarded (flattened out) if we just use Stabilized.
+        // If we want to strictly follow the scale, we discard the baseline declination.
+        const finalTargetCentsQ = new Int32Array(frameCount);
+
+        for (let i = 0; i < frameCount; i++) {
+            if (stabilized.noteIds[i] >= 0) {
+                // Stabilized Cents (e.g. 6900.0)
+                const stabCents = stabilized.targetCents[i];
+                
+                // Micro deviation in Hz -> Cents
+                // microHz is deviation from macroHz
+                // We approximate Cents Micro: 1200 * log2((macro + micro) / macro)
+                // Wait, micro is deviation around 0? No, F0Decomposer says "Relative Pitch Deviation (e.g., +2.5)".
+                
+                const macroHz = decomposition.macro.valuesHz[i];
+                const microHz = decomposition.micro.valuesHz[i];
+                let microCents = 0;
+                
+                if (macroHz > 10) {
+                    microCents = 1200 * Math.log2((macroHz + microHz) / macroHz);
+                }
+
+                // Final Cents = Stabilized + Micro
+                const finalCents = stabCents + microCents;
+
+                // Convert to Int32 Scaled (x1000)
+                finalTargetCentsQ[i] = Math.round(finalCents * 1000);
+            } else {
+                // Unvoiced - hold last or default?
+                // Let's copy from curveGen behavior or input pitch
+                // Here we just use 0 or last. Shifter usually ignores target for unvoiced.
+                finalTargetCentsQ[i] = 0;
+            }
+        }
+        
+        const target: TargetCurveV1 = {
+             sampleRateHz: f0Analysis.sampleRateHz,
+             frameHz: f0Analysis.frameHz,
+             hopSamples: f0Analysis.hopSamples,
+             t0Samples: f0Analysis.t0Samples,
+             targetCentsQ: finalTargetCentsQ
+        };
+        
         const envelope = this.envGen.generate(f0Analysis, voicing, target, plan);
 
         // 5. Apply Pitch Shift
