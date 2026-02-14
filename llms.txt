@@ -1,0 +1,59 @@
+# MCP Voice Engine
+
+> Deterministic, streaming-first prosody engine for expressive voice synthesis and real-time voice transformation
+
+## Overview
+
+MCP Voice Engine is a DSP engine for pitch control, prosody shaping, and voice transformation. It is streaming-first (causal, no retroactive edits), deterministic (same input + config = same output), and designed for real-time applications. It powers the mcp-voice-soundboard.
+
+## Quick Start
+
+```
+git clone https://github.com/mcp-tool-shop-org/mcp-voice-engine.git
+cd mcp-voice-engine
+npm install
+npm run build
+npm test
+```
+
+## Core Capabilities
+
+- **Deterministic output** — Same input + config produces identical output, verified by hash-based regression tests
+- **Streaming-first runtime** — Stateful, causal processing for low latency; supports snapshot/restore for persistence
+- **Expressive prosody controls** — Event-driven accents and boundary tones for cadence and intonation shaping
+- **Meaning tests** — Semantic guardrails enforcing accent locality, question vs statement boundaries, post-focus compression, deterministic event ordering
+
+## Repository Structure
+
+```
+packages/voice-engine-dsp/    Core DSP + streaming prosody engine, tests, benchmarks
+packages/voice-engine-dsp/docs/    Architecture, meaning contract, debugging guide, reference
+```
+
+## Test Commands
+
+```
+npm test                  # Full suite
+npm run test:meaning      # Semantic guardrail tests
+npm run test:determinism  # Reproducibility tests
+npm run bench:rtf         # Real-time factor benchmark
+npm run smoke             # Quick smoke test
+```
+
+## Constraints
+
+- Node.js / TypeScript
+- Causal processing only — no retroactive edits to already-emitted samples
+- Determinism guarantee holds only when chunking policy is identical
+- Style monotonicity invariant: expressive > neutral > flat (without increasing instability)
+
+## Links
+
+- Repository: https://github.com/mcp-tool-shop-org/mcp-voice-engine
+- Soundboard (consumer): https://github.com/mcp-tool-shop-org/mcp-voice-soundboard
+- Issues: https://github.com/mcp-tool-shop-org/mcp-voice-engine/issues
+- Discussions: https://github.com/mcp-tool-shop-org/mcp-voice-engine/discussions
+
+## License
+
+MIT
