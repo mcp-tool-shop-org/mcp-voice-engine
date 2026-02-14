@@ -1,6 +1,6 @@
 import { 
     AudioBufferV1, F0TrackV1, VoicingMaskV1, TuneScoreV1, TuneScoreScaleConfigV1
-} from "@mcp-voice/core";
+} from "@mcptoolshop/voice-engine-core";
 import { TargetCurveRefV1 } from "../src/tuning/TargetCurveRefV1.js";
 import { CorrectionControllerRefV1 } from "../src/tuning/CorrectionControllerRefV1.js";
 

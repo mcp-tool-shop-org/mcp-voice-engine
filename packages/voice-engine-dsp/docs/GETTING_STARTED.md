@@ -3,15 +3,15 @@
 ## Installation
 
 ```bash
-npm install @mcp-voice/dsp
+npm install @mcptoolshop/voice-engine-dsp
 ```
 
 ## Batch Processing
 For offline files or non-real-time contexts, use the `AutotuneExecutor`.
 
 ```typescript
-import { AutotuneExecutor, PitchShifterRefV1 } from '@mcp-voice-engine/dsp';
-import { TuneRequestV1 } from '@mcp-voice-engine/core';
+import { AutotuneExecutor, PitchShifterRefV1 } from '@mcptoolshop/voice-engine-dsp';
+import { TuneRequestV1 } from '@mcptoolshop/voice-engine-core';
 
 // 1. Configure the request
 const request: TuneRequestV1 = {
@@ -39,7 +39,7 @@ const result = await executor.execute(request, inputAudioBuffer);
 For real-time applications (voice changers, live calls), use `StreamingAutotuneEngine`.
 
 ```typescript
-import { StreamingAutotuneEngine } from '@mcp-voice/dsp';
+import { StreamingAutotuneEngine } from '@mcptoolshop/voice-engine-dsp';
 
 // 1. Initialize
 const engine = new StreamingAutotuneEngine({

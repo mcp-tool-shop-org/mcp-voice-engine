@@ -1,6 +1,6 @@
 import { test } from 'vitest';
 import { AutotuneExecutor } from "../src/tuning/AutotuneExecutor.js";
-import { TuneRequestV1, AudioBufferV1 } from "@mcp-voice/core";
+import { TuneRequestV1, AudioBufferV1 } from "@mcptoolshop/voice-engine-core";
 import { normalizePreset, HARD_TUNE_PRESET, SUBTLE_PRESET } from "../../voice-engine-core/src/config/ProsodyPresets.js";
 import { ProsodyEventV1 } from "../../voice-engine-core/src/prosody/ProsodyV1.js";
 import { PitchTrackerRefV1 } from "../src/analysis/PitchTrackerRefV1.js";

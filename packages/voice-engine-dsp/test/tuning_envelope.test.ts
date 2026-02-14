@@ -1,5 +1,5 @@
 import { CorrectionController } from "../src/tuning/CorrectionController.js";
-import { TunePlanV1, F0TrackV1, VoicingMaskV1, TargetCurveV1 } from "@mcp-voice/core";
+import { TunePlanV1, F0TrackV1, VoicingMaskV1, TargetCurveV1 } from "@mcptoolshop/voice-engine-core";
 
 console.log("Running Correction Envelope Tests...");
 

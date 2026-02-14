@@ -55,7 +55,7 @@ The engine provides several built-in presets for common use cases.
 ## Usage Example
 
 ```typescript
-import { PRESETS, validateAndClampConfig, applyExpressiveness } from '@mcp-voice/dsp';
+import { PRESETS, validateAndClampConfig, applyExpressiveness } from '@mcptoolshop/voice-engine-dsp';
 
 // Start with a preset
 let config = PRESETS.DEFAULT_CLEAN;

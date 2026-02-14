@@ -1,4 +1,4 @@
-import { AudioBufferV1, F0TrackV1 } from "@mcp-voice/core";
+import { AudioBufferV1, F0TrackV1 } from "@mcptoolshop/voice-engine-core";
 import { monoDownmix } from "../utils/AudioBufferUtils";
 
 export interface PitchTrackerConfig {

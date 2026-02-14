@@ -1,106 +1,78 @@
-# Voice Engine DSP
+<div align="center">
+  <img src="https://raw.githubusercontent.com/mcp-tool-shop-org/mcp-voice-engine/master/assets/logo.jpg" alt="MCP Voice Engine Logo" width="100%">
+</div>
 
-Core Digital Signal Processing (DSP) modules for the Voice Engine ecosystem. This package handles audio analysis, pitch correction, and transformation using deterministic pipelines.
+# MCP Voice Engine
 
-## Features
+Deterministic, streaming-first prosody engine for expressive voice synthesis, pitch control, and real-time voice transformation.
 
-### 1. Deterministic Autotune (Phase 5)
-A state-of-the-art, deterministic pitch correction pipeline designed for reliable, reproducible tuning. Unlike traditional "automagic" plugins, this system gives you frame-perfect control over how pitch is generated and corrected.
+<!-- Badges --> 
+<!-- ![Build Status](https://img.shields.io/github/actions/workflow/status/mcp-tool-shop-org/mcp-voice-engine/ci.yml) ![License](https://img.shields.io/github/license/mcp-tool-shop-org/mcp-voice-engine) -->
 
-#### Key Components:
-- **`TunePlanResolver`** (in Core): Compiles high-level user intent (Scales, Notes) into a deterministic execution plan.
-- **`TargetCurveGenerator`**: Generates high-precision continuous pitch curves derived from the plan. Uses milli-cent Q-format fixed-point math for precision.
-- **`ScaleQuantizer`**: Maps raw input pitch to the nearest valid scale degree with configurable snap strength.
-- **`AutotuneExecutor`**: The runtime orchestrator that connects Analysis, Plan Generation, and Pitch Shifting.
-- **`PitchShifterRefV1`**: A reference PSOLA (Pitch Synchronous Overlap-Add) implementation supporting formant-aware or chipmunk-style shifting.
+## Why this exists
 
-### Usage Example
+Most voice DSP systems fail in two places: **stability** (warble, jitter, note flutter) and **reproducibility** (“it only happens sometimes”). MCP Voice Engine is built to be musical, causal, and deterministic—so it behaves like software, not folklore.
 
-```typescript
-import { AutotuneExecutor, PitchShifterRefV1 } from '@mcp-voice-engine/dsp';
-import { TuneRequestV1 } from '@mcp-voice-engine/core';
+## What you can build with it
 
-// 1. Configure the request
-const request: TuneRequestV1 = {
-  spec: {
-    mode: 'auto',
-    config: {
-      mode: 'scale',
-      key: 'C',
-      scale: 'major',
-      snapStrengthQ: 10000, // Hard snap
-      glideMsQ: 50 // 50ms transitions
-    }
-  }
-};
+*   **Real-time voice stylization** for games and interactive apps (stable targets, expressive controls)
+*   **Streaming voice pipelines** (servers, bots, live processing)
+*   **DAW / toolchain integration** (deterministic pitch targets, consistent render behavior)
+*   **Web Audio demos** (AudioWorklet-ready architecture)
 
-// 2. Initialize Executor
-const shifter = new PitchShifterRefV1();
-const executor = new AutotuneExecutor(shifter);
+## Quickstart
 
-// 3. Process Audio (returns transformed buffer)
-const result = await executor.execute(request, inputAudioBuffer);
+```bash
+npm i
+npm run build
+npm test
 ```
 
-## Architecture
+## Core capabilities
 
-The DSP pipeline operates on raw PCM data (Float32) and utilizes a specialized Q-format numeric system for internal calculations to ensure consistency across environments.
+### Deterministic output
+Same input + config (and chunking policy) produces the same output, with regression protection via hash-based tests.
 
-- **Audio Buffer**: Standard Float32Array PCM.
-- **Control Signals**: Integer-based Q-format (e.g., Milli-Cents) to avoid floating-point drift.
+### Streaming-first runtime
+Stateful, causal processing designed for low latency. No retroactive edits. Snapshot/restore supported for persistence and resumability.
 
-## Streaming API
+### Expressive prosody controls
+Event-driven accents and boundary tones let you shape cadence and intonation intentionally—without destabilizing pitch targets.
 
-The `StreamingAutotuneEngine` supports real-time, low-latency processing with a 0-allocation hot path.
+### Meaning tests (semantic guardrails)
+The test suite enforces communicative behavior, including:
+*   **accent locality** (no “smear”)
+*   **question vs statement boundaries** (rise vs fall)
+*   **post-focus compression** (focus has consequences)
+*   **deterministic event ordering**
+*   **style monotonicity** (expressive > neutral > flat without increasing instability)
 
-```typescript
-import { StreamingAutotuneEngine } from '@mcp-voice/dsp';
+## Documentation
 
-// 1. Initialize
-const engine = new StreamingAutotuneEngine({
-    hysteresisCents: 15,
-    rootOffsetCents: 0,
-    rampFrames: 5,
-    correctionStrength: 0.8
-}, {});
+Primary docs live in [packages/voice-engine-dsp/docs/](packages/voice-engine-dsp/docs/).
 
-// 2. Schedule Real-time Events (Optional)
-// Schedule a pitch "scoop" (rise) 0.5s into the future
-engine.enqueueEvents([{
-    time: currentFrame + 25, // frame index
-    duration: 10,            // frames
-    strength: 50,            // cents
-    shape: 'rise'
-}]);
+### Key documents
 
-// 3. Process Chunk (in audio callback)
-// Input: Float32Array (e.g., 128 samples)
-const { audio, targets } = engine.process(inputChunk);
+*   [Streaming Architecture](packages/voice-engine-dsp/docs/STREAMING_ARCHITECTURE.md)
+*   [Meaning Contract](packages/voice-engine-dsp/docs/MEANING_CONTRACT.md)
+*   [Debugging Guide](packages/voice-engine-dsp/docs/DEBUGGING.md)
+*   [Reference Handbook](Reference_Handbook.md)
 
-// 'audio' is the processed output
-// 'targets' contains the pitch correction curve applied
+### Repository structure
+
+`packages/voice-engine-dsp/` — core DSP + streaming prosody engine, tests, and benchmarks
+
+## Running the test suites
+
+```bash
+npm test
 ```
 
-### Event Examples
+Or run specific suites:
 
-**Accent (Rapid Rise/Fall)**
-Used to emphasize a syllable.
-```typescript
-engine.enqueueEvents([{
-    time: frameIdx,
-    duration: 8,
-    strength: 150, // 1.5 semitone bump
-    shape: 'rise-fall'
-}]);
-```
-
-**Boundary Drop (Sentence End)**
-Simulate natural declination at the end of a phrase.
-```typescript
-engine.enqueueEvents([{
-    time: endFrameIdx - 20,
-    duration: 20,
-    strength: -200, // 2 semitone drop
-    shape: 'fall'
-}]);
+```bash
+npm run test:meaning
+npm run test:determinism
+npm run bench:rtf
+npm run smoke
 ```

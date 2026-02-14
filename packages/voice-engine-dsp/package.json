@@ -1,13 +1,16 @@
 {
-  "name": "@mcp-voice/dsp",
+  "name": "@mcptoolshop/voice-engine-dsp",
   "version": "0.0.1",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "files": [
-    "dist",
+    "dist/src",
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mcp-tool-shop-org/mcp-voice-engine.git"
@@ -30,6 +33,6 @@
     "smoke": "npx tsx tools/smoke-cli.ts"
   },
   "dependencies": {
-    "@mcp-voice/core": "0.0.1"
+    "@mcptoolshop/voice-engine-core": "0.0.1"
   }
 }

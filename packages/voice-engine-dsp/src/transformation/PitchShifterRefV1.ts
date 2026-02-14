@@ -1,7 +1,7 @@
 import { 
     IPitchShifter, 
     AudioBufferV1, F0TrackV1, VoicingMaskV1, TargetCurveV1, CorrectionEnvelopeV1 
-} from "@mcp-voice/core";
+} from "@mcptoolshop/voice-engine-core";
 
 import { FormantStrategyV1 } from "./FormantStrategyV1";
 

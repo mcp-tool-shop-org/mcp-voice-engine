@@ -1,5 +1,5 @@
 import { AutotuneExecutor } from "../src/tuning/AutotuneExecutor.js";
-import { TuneRequestV1, AudioBufferV1 } from "@mcp-voice/core";
+import { TuneRequestV1, AudioBufferV1 } from "@mcptoolshop/voice-engine-core";
 
 console.log("Running Autotune Integration Tests...");
 

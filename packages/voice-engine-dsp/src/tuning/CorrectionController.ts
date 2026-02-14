@@ -1,4 +1,4 @@
-import { F0TrackV1, VoicingMaskV1, TunePlanV1, TargetCurveV1, CorrectionEnvelopeV1 } from "@mcp-voice/core";
+import { F0TrackV1, VoicingMaskV1, TunePlanV1, TargetCurveV1, CorrectionEnvelopeV1 } from "@mcptoolshop/voice-engine-core";
 
 export class CorrectionController {
     generate(

@@ -1,5 +1,5 @@
 import { TargetCurveGenerator } from "../src/tuning/TargetCurveGenerator.js";
-import { TunePlanV1, F0TrackV1, VoicingMaskV1 } from "@mcp-voice/core";
+import { TunePlanV1, F0TrackV1, VoicingMaskV1 } from "@mcptoolshop/voice-engine-core";
 
 console.log("Running Target Curve Tests...");
 

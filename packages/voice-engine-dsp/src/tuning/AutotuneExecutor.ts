@@ -2,7 +2,7 @@ import {
     TuneRequestV1, AudioBufferV1,
     TunePlanResolver,
     F0TrackV1, VoicingMaskV1
-} from "@mcp-voice/core";
+} from "@mcptoolshop/voice-engine-core";
 import { PitchTrackerRefV1 } from "../analysis/PitchTrackerRefV1.js";
 import { PitchShifterRefV1 } from "../transformation/PitchShifterRefV1.js";
 import { TargetCurveGenerator } from "./TargetCurveGenerator.js";
@@ -13,7 +13,7 @@ import { PhraseBaselineModel } from "../../../voice-engine-core/src/prosody/Phra
 import { TargetStabilizer } from "../../../voice-engine-core/src/prosody/TargetStabilizer.js";
 import { ProsodyEventV1, ProsodyPlanV1 } from "../../../voice-engine-core/src/prosody/ProsodyV1.js";
 import { AccentRenderer } from "../prosody/AccentRenderer.js";
-import { TargetCurveV1 } from "@mcp-voice/core";
+import { TargetCurveV1 } from "@mcptoolshop/voice-engine-core";
 import { 
     HARD_TUNE_PRESET, 
     NATURAL_PRESET, 

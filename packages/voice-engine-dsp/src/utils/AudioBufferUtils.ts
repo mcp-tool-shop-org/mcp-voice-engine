@@ -1,4 +1,4 @@
-import { AudioBufferV1 } from "@mcp-voice/core";
+import { AudioBufferV1 } from "@mcptoolshop/voice-engine-core";
 
 export function monoDownmix(buffer: AudioBufferV1): Float32Array {
     if (buffer.channels === 1) {

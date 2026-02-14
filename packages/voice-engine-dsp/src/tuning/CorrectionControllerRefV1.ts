@@ -1,7 +1,7 @@
 import { 
     F0TrackV1, VoicingMaskV1, TuneScoreV1, CorrectionEnvelopeV1,
     TuneScoreScaleConfigV1
-} from "@mcp-voice/core";
+} from "@mcptoolshop/voice-engine-core";
 
 export class CorrectionControllerRefV1 {
     constructor() {}

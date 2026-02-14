@@ -1,7 +1,7 @@
 import { generateSine, generateNoise } from "./utils/SignalGenerator.js";
 import { PitchTrackerRefV1, PitchTrackerConfig } from "../src/analysis/PitchTrackerRefV1.js";
 import { VoicingDetectorRefV1, VoicingConfig } from "../src/analysis/VoicingDetectorRefV1.js";
-import { AudioBufferV1 } from "@mcp-voice/core";
+import { AudioBufferV1 } from "@mcptoolshop/voice-engine-core";
 
 // Deterministic Analysis Tests
 // We assert that specific inputs produce exact integer outputs.

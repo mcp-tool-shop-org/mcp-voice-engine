@@ -1,4 +1,4 @@
-import { IFormantStrategy, AudioBufferV1 } from "@mcp-voice/core";
+import { IFormantStrategy, AudioBufferV1 } from "@mcptoolshop/voice-engine-core";
 
 export class FormantStrategyV1 implements IFormantStrategy {
     async apply(tuned: AudioBufferV1, original: AudioBufferV1): Promise<AudioBufferV1> {

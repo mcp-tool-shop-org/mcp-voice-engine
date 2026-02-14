@@ -1,6 +1,6 @@
 
 import { AutotuneExecutor } from '../src/tuning/AutotuneExecutor.js';
-import { TuneRequestV1, AudioBufferV1 } from '@mcp-voice/core';
+import { TuneRequestV1, AudioBufferV1 } from '@mcptoolshop/voice-engine-core';
 import { PitchShifterRefV1 } from '../src/transformation/PitchShifterRefV1.js';
 
 // --- Test Framework Stub ---

@@ -1,6 +1,6 @@
 import { PitchShifterRefV1 } from "../src/transformation/PitchShifterRefV1.js";
 import { generateSine } from "./utils/SignalGenerator.js";
-import { AudioBufferV1, F0TrackV1, VoicingMaskV1, TargetCurveV1, CorrectionEnvelopeV1 } from "@mcp-voice/core";
+import { AudioBufferV1, F0TrackV1, VoicingMaskV1, TargetCurveV1, CorrectionEnvelopeV1 } from "@mcptoolshop/voice-engine-core";
 
 console.log("Running Audio Transformation Tests...");
 

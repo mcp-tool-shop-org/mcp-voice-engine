@@ -1,4 +1,4 @@
-import { F0TrackV1, VoicingMaskV1, TunePlanV1, TargetCurveV1 } from "@mcp-voice/core";
+import { F0TrackV1, VoicingMaskV1, TunePlanV1, TargetCurveV1 } from "@mcptoolshop/voice-engine-core";
 import { ScaleQuantizer } from "./ScaleQuantizer.js";
 
 export class TargetCurveGenerator {

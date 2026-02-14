@@ -2,7 +2,7 @@ import {
     F0TrackV1, VoicingMaskV1, TuneScoreV1, TargetCurveV1, 
     TuneScoreScaleConfigV1,
     parseKey, scaleToPitchClasses, nearestAllowedPitch 
-} from "@mcp-voice/core";
+} from "@mcptoolshop/voice-engine-core";
 
 export class TargetCurveRefV1 {
     constructor() {}
