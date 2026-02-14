@@ -91,7 +91,7 @@ async function runTests() {
     await (async () => {
         console.log("\nTest: Schema Contract (V0.5.0 vs Phase 6 Defaults)");
         const shifter = new PitchShifterRefV1();
-        const executor = new AutotuneExecutor(shifter);
+        const executor = new AutotuneExecutor();
         
         // 1. V0.5.0-style request (no new params)
         const reqOld: TuneRequestV1 = {
@@ -128,7 +128,8 @@ async function runTests() {
         const buffer: AudioBufferV1 = {
             data: [new Float32Array(inputAudio)],
             channels: 1,
-            sampleRate: sr
+            sampleRate: sr,
+            format: 'f32'
         };
         
         // Run Both (clone inputs)

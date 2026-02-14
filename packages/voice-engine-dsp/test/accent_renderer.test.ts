@@ -1,17 +1,30 @@
 import { describe, it, expect } from 'vitest';
-import { AccentRenderer, AccentEvent } from '../src/prosody/AccentRenderer';
+import { AccentRenderer } from '../src/prosody/AccentRenderer';
+import { ProsodyEventV1 } from '../../../voice-engine-core/src/prosody/ProsodyV1';
+
+const mockStyle = { 
+    id: 'mock-style',
+    accentMaxCents: 200, 
+    accentSpanSeconds: 0.2, 
+    eventStrengthScale: 1.0,
+    boundaryMaxCents: 100,
+    residualMix: 0,
+    postFocusCompression: 0
+};
 
 describe('AccentRenderer', () => {
     it('renders a raised cosine accent correctly (rise)', () => {
         const totalFrames = 100;
-        const events: AccentEvent[] = [{
+        const events: ProsodyEventV1[] = [{
+            type: 'accent',
             time: 50,
             duration: 20,
             strength: 1.0,
-            shape: 'rise'
+            shape: 'rise',
+            spanFrames: 20
         }];
         
-        const result = AccentRenderer.render(events, totalFrames);
+        const result = AccentRenderer.render(events, totalFrames, mockStyle);
         
         // Peak at center (d=0 -> cos(0)=1 -> 0.5*(2)=1)
         expect(result[50]).toBeCloseTo(1.0);
@@ -27,25 +40,27 @@ describe('AccentRenderer', () => {
 
     it('renders a fall accent (negative)', () => {
         const totalFrames = 100;
-        const events: AccentEvent[] = [{
+        const events: ProsodyEventV1[] = [{
+            type: 'accent',
             time: 50,
             duration: 20,
             strength: 1.0,
-            shape: 'fall'
+            shape: 'fall',
+            spanFrames: 20
         }];
         
-        const result = AccentRenderer.render(events, totalFrames);
+        const result = AccentRenderer.render(events, totalFrames, mockStyle);
         expect(result[50]).toBeCloseTo(-1.0);
     });
 
     it('handles overlap of multiple events', () => {
         const totalFrames = 100;
-        const events: AccentEvent[] = [
-            { time: 50, duration: 20, strength: 1.0, shape: 'rise' },
-            { time: 50, duration: 20, strength: 0.5, shape: 'rise' }
+        const events: ProsodyEventV1[] = [
+            { type: 'accent', time: 50, duration: 20, strength: 1.0, shape: 'rise', spanFrames: 20 },
+            { type: 'accent', time: 50, duration: 20, strength: 0.5, shape: 'rise', spanFrames: 20 }
         ];
         
-        const result = AccentRenderer.render(events, totalFrames);
+        const result = AccentRenderer.render(events, totalFrames, mockStyle);
         // 1.0 + 0.5 = 1.5
         expect(result[50]).toBeCloseTo(1.5);
     });
@@ -53,14 +68,16 @@ describe('AccentRenderer', () => {
     it('clamps to buffer boundaries', () => {
         const totalFrames = 20;
         // Event centered at 0, radius 5. Range [-5, 5].
-        const events: AccentEvent[] = [{
+        const events: ProsodyEventV1[] = [{
+            type: 'accent',
             time: 0,
             duration: 10,
             strength: 1.0,
-            shape: 'rise'
+            shape: 'rise',
+            spanFrames: 10
         }];
         
-        const result = AccentRenderer.render(events, totalFrames);
+        const result = AccentRenderer.render(events, totalFrames, mockStyle);
         
         expect(result[0]).toBeCloseTo(1.0);
         expect(result[5]).toBeCloseTo(0);
@@ -70,27 +87,31 @@ describe('AccentRenderer', () => {
 
     it('handles fall-rise shape as negative (same as fall based on requirements)', () => {
          const totalFrames = 100;
-         const events: AccentEvent[] = [{
+         const events: ProsodyEventV1[] = [{
+             type: 'accent',
              time: 50,
              duration: 20,
              strength: 1.0,
-             shape: 'fall-rise'
+             shape: 'fall-rise',
+             spanFrames: 20
          }];
          
-         const result = AccentRenderer.render(events, totalFrames);
+         const result = AccentRenderer.render(events, totalFrames, mockStyle);
          expect(result[50]).toBeCloseTo(-1.0);
     });
 
     it('handles rise-fall shape as positive (same as rise based on requirements)', () => {
          const totalFrames = 100;
-         const events: AccentEvent[] = [{
+         const events: ProsodyEventV1[] = [{
+             type: 'accent',
              time: 50,
              duration: 20,
              strength: 1.0,
-             shape: 'rise-fall'
+             shape: 'rise-fall',
+             spanFrames: 20
          }];
          
-         const result = AccentRenderer.render(events, totalFrames);
+         const result = AccentRenderer.render(events, totalFrames, mockStyle);
          expect(result[50]).toBeCloseTo(1.0);
     });
 });

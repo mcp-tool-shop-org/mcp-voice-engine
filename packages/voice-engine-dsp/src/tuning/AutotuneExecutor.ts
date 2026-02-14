@@ -116,7 +116,7 @@ export class AutotuneExecutor {
         }, f0Analysis.frameHz);
 
         // Phase 8: Expressive Rendering (8.4 Style Profiles)
-        const style = resolveProsodyStyle(req.style);
+        const style = resolveProsodyStyle(req.style || 'speech_neutral');
         
         if (req.events && req.events.length > 0) {
             const frameRateHz = f0Analysis.sampleRateHz / f0Analysis.hopSamples;
