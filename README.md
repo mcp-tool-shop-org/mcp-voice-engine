@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/mcp-tool-shop-org/mcp-voice-engine/master/assets/logo.jpg" alt="MCP Voice Engine Logo" width="100%">
+  <img src="https://raw.githubusercontent.com/mcp-tool-shop-org/mcp-voice-engine/main/assets/logo.jpg" alt="MCP Voice Engine Logo" width="100%">
 </div>
 
 # MCP Voice Engine
