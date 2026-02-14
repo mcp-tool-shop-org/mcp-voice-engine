@@ -66,3 +66,22 @@ export interface F0DecompositionV1 {
      */
     residual: ProsodyComponentV1;
 }
+
+export interface PhraseBaselineResultV1 {
+    /** 
+     * The modeled baseline curve (Hz) representing phrase declination.
+     * For unvoiced regions, this may be 0 or interpolated.
+     */
+    baselineHz: Float32Array;
+
+    /**
+     * The "intent" or "melodic contour" derived by removing the baseline.
+     * intent = macro - baseline.
+     */
+    intentHz: Float32Array;
+
+    /**
+     * Calculated slopes for each detected phrase (Hz/frame or Hz/sec).
+     */
+    slopes: number[];
+}
