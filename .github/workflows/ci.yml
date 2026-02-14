@@ -5,10 +5,22 @@ on:
     branches: [ "master" ]
     paths:
       - "packages/**"
+      - "src/**"
+      - "test/**"
       - "package.json"
+      - "package-lock.json"
       - "tsconfig*.json"
+      - ".github/workflows/**"
   pull_request:
     branches: [ "master" ]
+    paths:
+      - "packages/**"
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 jobs:
