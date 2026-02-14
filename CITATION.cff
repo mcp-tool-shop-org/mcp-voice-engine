@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: MCP Voice Engine
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: MCP Tool Shop
+    website: https://github.com/mcp-tool-shop-org
+repository-code: https://github.com/mcp-tool-shop-org/mcp-voice-engine
+url: https://github.com/mcp-tool-shop-org/mcp-voice-engine
+abstract: >-
+  Deterministic, streaming-first prosody engine for expressive
+  voice synthesis, pitch control, and real-time voice
+  transformation. Causal processing with semantic guardrail tests.
+keywords:
+  - voice-synthesis
+  - prosody
+  - dsp
+  - streaming
+  - deterministic
+  - text-to-speech
+license: MIT
+version: 1.0.0
+date-released: '2026-02-14'
