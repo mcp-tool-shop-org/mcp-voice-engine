@@ -76,3 +76,12 @@ npm run test:determinism
 npm run bench:rtf
 npm run smoke
 ```
+
+## Support
+
+- **Questions / help:** [Discussions](https://github.com/mcp-tool-shop-org/mcp-voice-engine/discussions)
+- **Bug reports:** [Issues](https://github.com/mcp-tool-shop-org/mcp-voice-engine/issues)
+
+## License
+
+MIT
