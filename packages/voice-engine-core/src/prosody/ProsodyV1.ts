@@ -48,6 +48,21 @@ export interface ProsodyComponentV1 {
     valuesHz: Float32Array;
 }
 
+export interface TargetStabilizerConfigV1 {
+    allowedPitchClasses?: number[];
+    rootOffsetCents?: number;
+    hysteresisCents?: number;
+    minHoldMs?: number;
+    transitionSlopeThreshCentsPerSec?: number;
+    switchRampMs?: number;
+}
+
+export interface StabilizedTargetV1 {
+    targetCents: Float32Array;
+    noteIds: Int32Array;
+    inTransition: Uint8Array;
+}
+
 export interface F0DecompositionV1 {
     /**
      * The slow-moving intonation curve (Phrase + Accent).
@@ -84,4 +99,39 @@ export interface PhraseBaselineResultV1 {
      * Calculated slopes for each detected phrase (Hz/frame or Hz/sec).
      */
     slopes: number[];
+}
+
+export interface TuningConfigV1 {
+    /** Root key ("C", "Db", "F#"). Default: "C". */
+    key?: string; 
+    /** Scale name ("major", "minor", "chromatic", "pentatonic_minor"). Default: "chromatic". */
+    scale?: string; 
+    /** Reference pitch in Hz. Default: 440. */
+    referenceHz?: number; 
+    /** Explicitly allowed MIDI pitch classes (0-11). Overrides key/scale if provided. */
+    enabledPitchClasses?: number[]; 
+}
+
+export interface ProsodyPresetV1 {
+    id: string;
+    name: string;
+    description: string;
+    
+    /** Analysis configuration (Segmentation, Decomposer, Baseline) */
+    analysis: ProsodyAnalysisConfigV1;
+    
+    /** stabilizer configuration (Quantization, Hysteresis, Smoothing) */
+    stabilizer: TargetStabilizerConfigV1;
+    
+    /** Tuning configuration (Key/Scale) - usually overridden by user */
+    tuning: TuningConfigV1;
+    
+    /** Strength of pitch correction (0.0 - 1.0). Scales the correction envelope. Default: 1.0. */
+    correctionStrength?: number;
+    
+    /** Attack time in ms. Default: 20ms. */
+    attackMs?: number;
+    
+    /** Release time in ms. Default: 100ms. */
+    releaseMs?: number;
 }

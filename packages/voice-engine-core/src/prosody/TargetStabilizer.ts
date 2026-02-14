@@ -1,19 +1,4 @@
-import { ProsodySegmentV1 } from './ProsodyV1.js';
-
-export interface TargetStabilizerConfigV1 {
-    allowedPitchClasses?: number[];
-    rootOffsetCents?: number;
-    hysteresisCents?: number;
-    minHoldMs?: number;
-    transitionSlopeThreshCentsPerSec?: number;
-    switchRampMs?: number;
-}
-
-export interface StabilizedTargetV1 {
-    targetCents: Float32Array;
-    noteIds: Int32Array;
-    inTransition: Uint8Array;
-}
+import { ProsodySegmentV1, TargetStabilizerConfigV1, StabilizedTargetV1 } from './ProsodyV1.js';
 
 export class TargetStabilizer {
     public stabilize(

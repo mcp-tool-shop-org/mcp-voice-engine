@@ -7,11 +7,18 @@ import { PitchTrackerRefV1 } from "../analysis/PitchTrackerRefV1.js";
 import { PitchShifterRefV1 } from "../transformation/PitchShifterRefV1.js";
 import { TargetCurveGenerator } from "./TargetCurveGenerator.js";
 import { CorrectionController } from "./CorrectionController.js";
-import { F0Decomposer } from "../../voice-engine-core/src/prosody/F0Decomposer.js";
-import { ProsodySegmenter } from "../../voice-engine-core/src/prosody/ProsodySegmenter.js";
-import { PhraseBaselineModel } from "../../voice-engine-core/src/prosody/PhraseBaselineModel.js";
-import { TargetStabilizer } from "../../voice-engine-core/src/prosody/TargetStabilizer.js";
+import { F0Decomposer } from "../../../voice-engine-core/src/prosody/F0Decomposer.js";
+import { ProsodySegmenter } from "../../../voice-engine-core/src/prosody/ProsodySegmenter.js";
+import { PhraseBaselineModel } from "../../../voice-engine-core/src/prosody/PhraseBaselineModel.js";
+import { TargetStabilizer } from "../../../voice-engine-core/src/prosody/TargetStabilizer.js";
 import { TargetCurveV1 } from "@mcp-voice/core";
+import { 
+    HARD_TUNE_PRESET, 
+    NATURAL_PRESET, 
+    SUBTLE_PRESET, 
+    ProsodyPresetV1 
+} from "../../../voice-engine-core/src/config/ProsodyPresets.js";
+
 
 export class AutotuneExecutor {
     private resolver = new TunePlanResolver();
@@ -32,36 +39,36 @@ export class AutotuneExecutor {
     private baselineModel = new PhraseBaselineModel();
     private stabilizer = new TargetStabilizer();
 
+    private resolveProsodyPreset(presetName?: string): ProsodyPresetV1 {
+        switch (presetName) {
+            case "hard":
+            case "robot":
+                return HARD_TUNE_PRESET;
+            case "subtle":
+                return SUBTLE_PRESET;
+            case "natural":
+            case "pop":
+            default:
+                return NATURAL_PRESET;
+        }
+    }
+
     async execute(req: TuneRequestV1, audio: AudioBufferV1): Promise<AudioBufferV1> {
         // 1. Resolve Plan
         const plan = this.resolver.resolve(req);
+        const preset = this.resolveProsodyPreset(req.preset);
 
         // 2. Analyze Pitch
         const f0Analysis = this.tracker.analyze(audio);
         const frameCount = f0Analysis.f0MhzQ.length;
 
-        // 2b. Compute Energy (needed for segmentation)
-        // We assume channel 0. window/hop from f0Analysis if available, or tracker config.
-        const hopSamples = f0Analysis.hopSamples || Math.floor(audio.sampleRate * 0.010);
-        // Approximation: usually window is 4x hop or explicit. Let's assume 40ms from tracker default.
-        const windowSamples = Math.floor(audio.sampleRate * 0.040); 
-        const energyDb = this.calculateEnergyDb(audio.channels[0], frameCount, hopSamples, windowSamples);
-        
         // 3. Decompose Pitch (New in Phase 7.2)
         // We separate macro (intonation) from micro (jitter/vibrato).
         const decomposition = this.decomposer.decompose(f0Analysis);
 
         // 3b. Prosody Segmentation (Phase 7.1)
         // Identify voiced vs unvoiced vs silence phrases.
-        // We convert Int16 confQ to 0..10000. Assuming tracker output is compatible or we use it directly.
-        // PitchTrackerRefV1 confQ is likely Uint16 or Float. Let's cast/ensure.
-        // If f0Analysis.confQ is float 0..1, scale. If 0..10000, use as is.
-        // Assuming current tracker ref uses 0..10000 range based on usage in loop below (conf > 1500).
-        const segments = this.segmenter.analyze({
-            energyDb: energyDb,
-            confidenceQ: f0Analysis.confQ, // Assuming type compatibility or Uint16Array
-            frameCount: frameCount
-        });
+        const segments = this.segmenter.segment(audio.data[0], f0Analysis, preset.analysis);
 
         // 3c. Phrase Baseline (Phase 7.3)
         // Model the declination trend of each phrase.
@@ -101,9 +108,11 @@ export class AutotuneExecutor {
         // Stabilize the INTENT curve (macro - baseline)
         const stabilized = this.stabilizer.stabilize(baseline.intentHz, segments, {
             allowedPitchClasses: plan.scaleConfig?.allowedPitchClasses,
-            hysteresisCents: 15, // Default or from plan if available
-            rootOffsetCents: 0, 
-            switchRampMs: 30
+            hysteresisCents: preset.stabilizer.hysteresisCents,
+            minHoldMs: preset.stabilizer.minHoldMs,
+            switchRampMs: preset.stabilizer.switchRampMs,
+            transitionSlopeThreshCentsPerSec: preset.stabilizer.transitionSlopeThreshCentsPerSec,
+            rootOffsetCents: 0
         }, f0Analysis.frameHz);
 
         // Re-construct the Final Target Curve

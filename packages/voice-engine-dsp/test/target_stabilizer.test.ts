@@ -1,6 +1,6 @@
 
-import { TargetStabilizer, TargetStabilizerConfigV1 } from '../../voice-engine-core/src/prosody/TargetStabilizer';
-import { ProsodySegmentV1 } from '../../voice-engine-core/src/prosody/ProsodyV1';
+import { TargetStabilizer } from '../../voice-engine-core/src/prosody/TargetStabilizer';
+import { ProsodySegmentV1, TargetStabilizerConfigV1 } from '../../voice-engine-core/src/prosody/ProsodyV1';
 
 // Simple check function
 function expect(value: any) {
