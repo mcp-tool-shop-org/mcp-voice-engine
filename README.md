@@ -6,8 +6,11 @@
 
 Deterministic, streaming-first prosody engine for expressive voice synthesis, pitch control, and real-time voice transformation.
 
-<!-- Badges --> 
-<!-- ![Build Status](https://img.shields.io/github/actions/workflow/status/mcp-tool-shop-org/mcp-voice-engine/ci.yml) ![License](https://img.shields.io/github/license/mcp-tool-shop-org/mcp-voice-engine) -->
+<p align="center">
+  <a href="https://github.com/mcp-tool-shop-org/mcp-voice-engine/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/mcp-tool-shop-org/mcp-voice-engine/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
+  <img src="https://img.shields.io/badge/node-%E2%89%A518-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 18+">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/mcp-tool-shop-org/mcp-voice-engine?style=flat-square" alt="License"></a>
+</p>
 
 ## Why this exists
 
