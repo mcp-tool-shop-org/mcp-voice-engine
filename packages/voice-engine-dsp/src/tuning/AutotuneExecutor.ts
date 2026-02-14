@@ -29,8 +29,11 @@ export class AutotuneExecutor {
 
         // 2. Analyze Pitch
         const f0Analysis = this.tracker.analyze(audio);
-        console.log(`Debug Analysis: ${f0Analysis.f0MhzQ.length} frames. SR: ${f0Analysis.sampleRateHz}`);
-        console.log("Debug F0[50]:", f0Analysis.f0MhzQ[50]); // Middle
+        // console.log(`Debug Analysis: ${f0Analysis.f0MhzQ.length} frames. SR: ${f0Analysis.sampleRateHz}`);
+        
+        // Debug Middle Frame
+        const mid = Math.floor(f0Analysis.f0MhzQ.length / 2);
+        // console.log(`Debug F0[${mid}]:`, f0Analysis.f0MhzQ[mid] / 1000, "Hz");
         
         // 3. Derive Voicing (Simple Threshold)
         // In a real pipeline, use a dedicated voicing estimator (SVM/DNN).

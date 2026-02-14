@@ -14,6 +14,16 @@ export interface TuneScoreScaleConfigV1 {
     vibratoDepthCentsQ?: number;
     /** Vibrato rate in Hz * 100 (0..1200) - Optional */
     vibratoRateHzQ?: number;
+
+    // --- Phase 6 Controls (Optional) ---
+    /** Global correction mix (0..10000), default 10000 */
+    globalStrengthQ?: number;
+    /** Attack time in ms (0..1000), default 0 */
+    attackMsQ?: number;
+    /** Release time in ms (0..1000), default 0 */
+    releaseMsQ?: number;
+    /** Hysteresis window in cents (0..100), default 0 */
+    hysteresisCentsQ?: number;
 }
 
 export interface TuneScoreNoteEventV1 {
@@ -44,6 +54,12 @@ export interface TuneRequestV1 {
         glideMs?: number;      // 0..inf
         retuneSpeed?: number;  // 0..100
         consonantProtection?: number; // 0..100
+        
+        // Phase 6
+        globalStrength?: number; // 0..100
+        attackMs?: number;       // 0..1000
+        releaseMs?: number;      // 0..1000
+        hysteresisCents?: number;// 0..100
     };
 }
 
@@ -71,6 +87,12 @@ export interface TunePlanV1 {
         retuneSpeedQ: number;
         /** 0..10000 - reduction of correction on low confidence */
         consonantProtectionQ: number;
+
+        // Phase 6
+        globalStrengthQ: number;
+        attackMsQ: number;
+        releaseMsQ: number;
+        hysteresisCentsQ: number;
     };
 
     /** System/Version info for determinism */

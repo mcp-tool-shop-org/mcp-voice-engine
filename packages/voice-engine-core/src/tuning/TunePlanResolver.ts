@@ -14,12 +14,23 @@ export class TunePlanResolver {
         const speed = req.overrides?.retuneSpeed ?? defaults.speed;
         const prot = req.overrides?.consonantProtection ?? defaults.protection;
 
+        // Phase 6 optional overrides
+        // Helper to safely access config if it's scale mode
+        const scaleConfig = (req.mode === "scale" || (req as any).config?.mode === "scale") 
+            ? (req as any).config 
+            : undefined;
+            
+        // Resolving Phase 6 parameters: Check scaleConfig (Q-format) OR overrides (Human-format)
+        const globalStrength = scaleConfig?.globalStrengthQ ?? (req.overrides?.globalStrength !== undefined ? req.overrides.globalStrength * 100 : 10000);
+        const attack = scaleConfig?.attackMsQ ?? (req.overrides?.attackMs ?? 0);
+        const release = scaleConfig?.releaseMsQ ?? (req.overrides?.releaseMs ?? 0);
+        const hysteresis = scaleConfig?.hysteresisCentsQ ?? (req.overrides?.hysteresisCents ?? 0);
+
         // 3. Resolve Scale
-        // Simple C Major default if missing
-        const key = (req.key || "C").toUpperCase();
-        const scale = (req.scale || "chromatic").toLowerCase();
+        const key = req.mode === "scale" ? req.key : (req as any).config?.key ?? "C";
+        const scale = req.mode === "scale" ? req.scale : (req as any).config?.scale ?? "chromatic";
         
-        const pcs = this.resolvePitchClasses(key, scale);
+        const pcs = this.resolvePitchClasses(key.toUpperCase(), scale.toLowerCase());
 
         return {
             mode: req.mode,
@@ -34,7 +45,13 @@ export class TunePlanResolver {
                 // glideMsQ defined once
                 glideMsQ: Math.floor(glide),
                 retuneSpeedQ: Math.floor(this.clamp(speed, 0, 100) * 100),
-                consonantProtectionQ: Math.floor(this.clamp(prot, 0, 100) * 100)
+                consonantProtectionQ: Math.floor(this.clamp(prot, 0, 100) * 100),
+                
+                // Phase 6
+                globalStrengthQ: Math.floor(this.clamp(globalStrength, 0, 10000)),
+                attackMsQ: Math.floor(Math.max(0, attack)),
+                releaseMsQ: Math.floor(Math.max(0, release)),
+                hysteresisCentsQ: Math.floor(Math.max(0, hysteresis))
             },
             meta: {
                 resolverVersion: this.version,

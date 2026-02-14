@@ -14,6 +14,20 @@ export class CorrectionController {
         const protection = plan.parameters.consonantProtectionQ / 10000.0; // 0..1
         const speedVal = plan.parameters.retuneSpeedQ; // 0..10000
         
+        // Phase 6 Controls
+        const globalMix = (plan.parameters.globalStrengthQ ?? 10000) / 10000.0; // 0..1
+        const attackMs = plan.parameters.attackMsQ ?? 0;
+        const releaseMs = plan.parameters.releaseMsQ ?? 0;
+        
+        // Time constants
+        // const frameDur = f0.hopSamples / f0.sampleRateHz; // e.g. 0.01s
+        const frameDur = 0.01; // Force 10ms for debugging if needed
+        
+        let alphaAtt = attackMs > 0 ? (1.0 - Math.exp(-frameDur / (attackMs / 1000.0))) : 1.0;
+        let alphaRel = releaseMs > 0 ? (1.0 - Math.exp(-frameDur / (releaseMs / 1000.0))) : 1.0;
+        
+        let currentStrength = 0;
+
         // Retune Speed Model:
         // low speed => low alpha (lazy correction). high speed => high alpha.
         // If speed=10000 (100%), alpha=1.0 (Instant).
@@ -70,10 +84,18 @@ export class CorrectionController {
             const confCheck = Math.max(0, 1.0 - protection * (1.0 - conf));
 
             // 5. Final Strength
-            // Base Snap * Computed Ratio * Protection
-            const finalStrength = baseSnap * ratio * confCheck;
+            // Base Snap * Computed Ratio * Protection * Global Mix (Phase 6)
+            let targetStrength = baseSnap * ratio * confCheck * globalMix;
+            
+            // 6. Attack / Release Smoothing
+            if (targetStrength > currentStrength) {
+                // console.log(`Debug Att: Target=${targetStrength}, Curr=${currentStrength}, Alpha=${alphaAtt}`);
+                currentStrength += (targetStrength - currentStrength) * alphaAtt;
+            } else {
+                currentStrength += (targetStrength - currentStrength) * alphaRel;
+            }
 
-            strengthQ[i] = Math.floor(finalStrength * 10000);
+            strengthQ[i] = Math.floor(currentStrength * 10000);
         }
 
         return {
