@@ -1,3 +1,5 @@
+import { ProsodyEventV1, ProsodyStyleIdV1, ProsodyStyleV1 } from "../prosody/ProsodyV1.js";
+
 /**
  * Configuration and schemas for deterministic musical intent (Phase 3).
  */
@@ -49,6 +51,11 @@ export interface TuneRequestV1 {
     key?: string;   // e.g. "C", "F#"
     scale?: string; // e.g. "major", "minor", "chromatic"
     preset?: TuningPreset; // defaults to "natural"
+    
+    // Phase 8: Expressive Events
+    events?: ProsodyEventV1[];
+    style?: ProsodyStyleIdV1 | ProsodyStyleV1;
+
     overrides?: {
         snapStrength?: number; // 0..100
         glideMs?: number;      // 0..inf

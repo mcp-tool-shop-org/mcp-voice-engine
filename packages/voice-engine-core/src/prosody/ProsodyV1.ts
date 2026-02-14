@@ -135,3 +135,49 @@ export interface ProsodyPresetV1 {
     /** Release time in ms. Default: 100ms. */
     releaseMs?: number;
 }
+
+/**
+ * Interfaces for Expressive Prosody (Phase 8)
+ */
+
+export type ProsodyEventShape = 'rise' | 'fall' | 'rise-fall' | 'fall-rise';
+
+export type ProsodyEventScope = 'voicedSegment' | 'phrase';
+
+export type ProsodyEventClamp = 'hard' | 'fade';
+
+export interface ProsodyEventV1 {
+    id?: string;
+    type: "accent" | "boundary" | "reset" | "deaccent";
+    /** frame index where the event is centered/anchored */
+    time: number;
+    /** normalized strength 0..1 (can map to e.g. 600 cents) */
+    strength: number;
+    shape?: ProsodyEventShape;
+    /** duration in frames */
+    spanFrames?: number;
+    scope?: ProsodyEventScope;
+    clamp?: ProsodyEventClamp;
+}
+
+export interface ProsodyPlanV1 {
+    events: ProsodyEventV1[];
+}
+
+export type ProsodyStyleIdV1 = 'speech_neutral' | 'speech_expressive' | 'pop_tight' | 'robot_flat';
+
+export interface ProsodyStyleV1 {
+    id: string;
+    /** Scale factor for accent peak height (cents). Default: 1.0 (approx 600 cents) */
+    accentMaxCents: number;
+    /** Scale factor for boundary strength (cents). Default: 1.0 (approx 400 cents) */
+    boundaryMaxCents: number;
+    /** Default duration of an accent if spanFrames not provided. In seconds (will be converted to frames). Default: 0.15s */
+    accentSpanSeconds: number;
+    /** Factor to scale event strength values (0..2.0). Default: 1.0 */
+    eventStrengthScale: number;
+    /** Mix of residual/micro-prosody (0..1.0). Default: 1.0 */
+    residualMix: number;
+    /** Post-focus compression factor (0..1.0). 1.0 = full compression (flat) after main accent. */
+    postFocusCompression: number;
+}

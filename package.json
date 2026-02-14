@@ -3,10 +3,22 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc --build"
+    "build": "tsc --build",
+    "test": "npm test -w packages/voice-engine-dsp",
+    "test:meaning": "npm run test:meaning -w packages/voice-engine-dsp",
+    "test:determinism": "npm run test:determinism -w packages/voice-engine-dsp",
+    "bench:rtf": "npm run bench:rtf -w packages/voice-engine-dsp",
+    "smoke": "npm run smoke -w packages/voice-engine-dsp",
+    "clean": "rm -rf dist packages/*/dist packages/*/node_modules node_modules",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/node": "^25.2.3",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
     "typescript": "^5.9.3"
   }
 }

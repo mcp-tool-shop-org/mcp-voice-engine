@@ -79,8 +79,10 @@ export class PhraseBaselineModel {
                 const frameIdx = segment.startFrame + i; // Correct offset
                 
                 baselineHz[frameIdx] = modelVal;
-                // Intent is what's left after removing the declination trend
-                intentHz[frameIdx] = macroF0[frameIdx] - modelVal;
+                // Intent is what's left after removing the declination trend (slope),
+                // but preserving the absolute pitch level (intercept + residuals).
+                // We subtract only the slope component: (slope * x)
+                intentHz[frameIdx] = macroF0[frameIdx] - (slope * x);
             }
         }
 
