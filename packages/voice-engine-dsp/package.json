@@ -3,9 +3,25 @@
   "version": "0.0.1",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
-  "private": true,
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcp-tool-shop-org/mcp-voice-engine.git"
+  },
+  "keywords": [
+    "voice",
+    "prosody",
+    "autotune",
+    "streaming",
+    "dsp",
+    "mcp"
+  ],
+  "author": "MCP Voice Engine Maintainers",
+  "license": "MIT",
   "scripts": {
     "test:meaning": "vitest run test/streaming_golden.test.ts",
     "test:determinism": "vitest run test/determinism_matrix.test.ts",
