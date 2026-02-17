@@ -4,6 +4,9 @@
 
 # MCP Voice Engine
 
+> Part of [MCP Tool Shop](https://mcptoolshop.com)
+
+
 Deterministic, streaming-first prosody engine for expressive voice synthesis, pitch control, and real-time voice transformation.
 
 <p align="center">
