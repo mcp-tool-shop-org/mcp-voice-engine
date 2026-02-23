@@ -1,6 +1,6 @@
 {
   "name": "@mcptoolshop/voice-engine-dsp",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "DSP utilities for MCP Voice Engine — pitch analysis, prosody, and audio processing",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

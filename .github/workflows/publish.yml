@@ -25,7 +25,13 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Publish voice-engine-dsp
-        run: cd packages/voice-engine-dsp && npm publish --provenance --access public
+        continue-on-error: true
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::warning::NPM_TOKEN secret not set — skipping npm publish"
+            exit 0
+          fi
+          cd packages/voice-engine-dsp && npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
