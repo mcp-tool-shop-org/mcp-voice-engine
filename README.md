@@ -1,23 +1,27 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/mcp-tool-shop-org/mcp-voice-engine/main/assets/logo.jpg" alt="MCP Voice Engine Logo" width="100%">
-</div>
+<p align="center">
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+</p>
 
-# MCP Voice Engine
-
-> Part of [MCP Tool Shop](https://mcptoolshop.com)
-
-
-Deterministic, streaming-first prosody engine for expressive voice synthesis, pitch control, and real-time voice transformation.
+<p align="center">
+  <img src="assets/logo.png" alt="MCP Voice Engine" width="400" />
+</p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/mcp-voice-engine/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/mcp-tool-shop-org/mcp-voice-engine/ci.yml?branch=main&style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/node-%E2%89%A520-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js 20+">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/mcp-tool-shop-org/mcp-voice-engine?style=flat-square" alt="License"></a>
+  <a href="https://mcp-tool-shop-org.github.io/mcp-voice-engine/"><img src="https://img.shields.io/badge/Landing_Page-live-blue?style=flat-square" alt="Landing Page"></a>
 </p>
+
+# MCP Voice Engine
+
+> Part of [MCP Tool Shop](https://mcptoolshop.com)
+
+Deterministic, streaming-first prosody engine for expressive voice synthesis, pitch control, and real-time voice transformation.
 
 ## Why this exists
 
-Most voice DSP systems fail in two places: **stability** (warble, jitter, note flutter) and **reproducibility** (“it only happens sometimes”). MCP Voice Engine is built to be musical, causal, and deterministic—so it behaves like software, not folklore.
+Most voice DSP systems fail in two places: **stability** (warble, jitter, note flutter) and **reproducibility** ("it only happens sometimes"). MCP Voice Engine is built to be musical, causal, and deterministic—so it behaves like software, not folklore.
 
 ## What you can build with it
 
@@ -47,7 +51,7 @@ Event-driven accents and boundary tones let you shape cadence and intonation int
 
 ### Meaning tests (semantic guardrails)
 The test suite enforces communicative behavior, including:
-*   **accent locality** (no “smear”)
+*   **accent locality** (no "smear")
 *   **question vs statement boundaries** (rise vs fall)
 *   **post-focus compression** (focus has consequences)
 *   **deterministic event ordering**
