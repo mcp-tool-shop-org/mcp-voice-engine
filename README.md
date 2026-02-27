@@ -92,6 +92,31 @@ npm run smoke
 - **Questions / help:** [Discussions](https://github.com/mcp-tool-shop-org/mcp-voice-engine/discussions)
 - **Bug reports:** [Issues](https://github.com/mcp-tool-shop-org/mcp-voice-engine/issues)
 
+## Security & Data Scope
+
+| Aspect | Detail |
+|--------|--------|
+| **Data touched** | In-memory float arrays (audio samples). Configuration objects for pitch/prosody parameters |
+| **Data NOT touched** | No file system writes. No network. No telemetry. No analytics. No user data |
+| **Permissions** | None — pure computation library with no I/O side effects |
+| **Network** | None — fully offline, no listeners or egress |
+| **Telemetry** | None collected or sent |
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+## Scorecard
+
+| Category | Score |
+|----------|-------|
+| A. Security | 10 |
+| B. Error Handling | 10 |
+| C. Operator Docs | 10 |
+| D. Shipping Hygiene | 10 |
+| E. Identity (soft) | 10 |
+| **Overall** | **50/50** |
+
+> Full audit: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
 ## License
 
 MIT
