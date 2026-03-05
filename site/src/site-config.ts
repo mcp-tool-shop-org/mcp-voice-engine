@@ -14,7 +14,7 @@ export const config: SiteConfig = {
     headlineAccent: 'software, not folklore.',
     description: 'Streaming TTS inference backend with Kokoro/Piper synthesis, expressive prosody controls, and deterministic output. Powers mcp-voice-soundboard.',
     primaryCta: { href: '#quickstart', label: 'Quick start' },
-    secondaryCta: { href: '#capabilities', label: 'See capabilities' },
+    secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
       { label: 'Install', code: 'npm i && npm run build' },
       { label: 'Test', code: 'npm test\nnpm run test:meaning\nnpm run test:determinism' },
