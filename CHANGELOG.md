@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2026-03-25
+
+### Added
+- Version alignment tests for DSP package (semver, >= 1.0.0, core dependency match)
+
 ## [1.0.0] - 2026-02-14
 
 ### Codename: "Resonance"
