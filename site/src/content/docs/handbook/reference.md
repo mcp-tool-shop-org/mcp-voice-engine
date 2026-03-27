@@ -31,7 +31,31 @@ Primary docs live in `packages/voice-engine-dsp/docs/`:
 
 | Package | Path | Contents |
 |---------|------|----------|
-| voice-engine-dsp | `packages/voice-engine-dsp/` | Core DSP, streaming prosody engine, meaning tests, determinism tests, RTF benchmarks |
+| voice-engine-core | `packages/voice-engine-core/` | Shared types, schemas, config defaults, prosody interfaces, tuning logic, error codes |
+| voice-engine-dsp | `packages/voice-engine-dsp/` | Core DSP, streaming autotune engine, adapters (Node stream, AudioWorklet), meaning tests, determinism tests, RTF benchmarks |
+
+## Error codes
+
+The engine uses structured error codes defined in `VoiceErrorCode` (voice-engine-core). Categories:
+
+| Category | Examples |
+|----------|----------|
+| Core | `CORE_INVALID_CONFIG`, `CORE_TIMEOUT`, `CORE_RESOURCE_EXHAUSTED` |
+| Synthesis | `SYNTH_INVALID_VOICE`, `SYNTH_UNSUPPORTED_LANGUAGE` |
+| DSP | `DSP_PROCESSING_FAILED`, `PITCH_SHIFT_FAILED`, `UNSUPPORTED_SAMPLE_RATE` |
+| IO | `IO_FILE_NOT_FOUND`, `IO_READ_ERROR`, `IO_NETWORK_ERROR` |
+
+## Default configuration
+
+| Parameter | Default | Source |
+|-----------|---------|--------|
+| Sample rate | 24000 Hz | `DEFAULT_CONFIG_V1` |
+| F0 range | 60--600 Hz | `DEFAULT_ANALYSIS_CONFIG_V1` |
+| Silence threshold | -60 dB | `DEFAULT_PROSODY_CONFIG_V1` |
+| Voicing threshold | 2000 (Q scale) | `DEFAULT_PROSODY_CONFIG_V1` |
+| Hysteresis | 15 cents | `DEFAULT_STABILIZER_CONFIG_V1` |
+| Reference pitch | 440 Hz | `DEFAULT_TUNING_CONFIG_V1` |
+| Default scale | chromatic | `DEFAULT_TUNING_CONFIG_V1` |
 
 ## Security and data scope
 

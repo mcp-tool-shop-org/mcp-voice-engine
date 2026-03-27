@@ -70,7 +70,11 @@ Primary docs live in [packages/voice-engine-dsp/docs/](packages/voice-engine-dsp
 
 ### Repository structure
 
-`packages/voice-engine-dsp/` — core DSP + streaming prosody engine, tests, and benchmarks
+```
+packages/
+├── voice-engine-core/   # Shared types, schemas, config, prosody interfaces
+└── voice-engine-dsp/    # Core DSP engine, streaming autotune, adapters, tests
+```
 
 ## Running the test suites
 

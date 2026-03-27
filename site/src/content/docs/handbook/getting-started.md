@@ -38,15 +38,29 @@ npm run smoke              # end-to-end smoke test
 
 ## Repository structure
 
-The monorepo contains one primary package today, with clean separation for future synthesis backends:
+The monorepo contains two packages with clean separation between shared types and DSP logic:
 
 ```
 mcp-voice-engine/
-└── packages/
-    └── voice-engine-dsp/    # Core DSP + streaming prosody engine
-        ├── docs/            # Architecture, meaning contract, debugging
-        ├── src/             # Source code
-        └── tests/           # Meaning, determinism, and benchmark suites
+├── packages/
+│   ├── voice-engine-core/   # Shared types, schemas, config, prosody interfaces
+│   │   └── src/
+│   │       ├── config/      # Default presets, styles, analysis config
+│   │       ├── interfaces/  # Module, pitch tracker, formant strategy contracts
+│   │       ├── prosody/     # ProsodyV1 types, streaming state, F0 decomposer
+│   │       ├── schema/      # Error codes, render plans, tuning, artifacts
+│   │       └── tuning/      # TunePlanResolver, scale logic
+│   └── voice-engine-dsp/    # Core DSP + streaming prosody engine
+│       ├── docs/            # Architecture, meaning contract, debugging
+│       ├── src/
+│       │   ├── adapters/    # NodeStreamAutotune, AudioWorkletProcessor
+│       │   ├── analysis/    # Pitch tracker, voicing detector
+│       │   ├── prosody/     # AccentRenderer, SafetyRails, Presets
+│       │   ├── transformation/ # Pitch shifter, formant strategy
+│       │   ├── tuning/      # StreamingAutotuneEngine, scale quantizer
+│       │   └── utils/       # Audio buffer utilities
+│       └── test/            # Meaning, determinism, and benchmark suites
+└── site/                    # Starlight handbook and landing page
 ```
 
 ## Key documentation

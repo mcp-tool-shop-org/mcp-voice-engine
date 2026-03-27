@@ -35,10 +35,48 @@ Each meaning test checks a specific communicative property:
 
 ## Style levels
 
-The engine supports multiple style levels with a strict monotonicity guarantee:
+The engine ships four built-in prosody styles, each defining accent range, boundary strength, event scaling, residual mix, and post-focus compression:
 
-```
-flat < neutral < expressive
-```
+| Style | Accent range | Boundary range | Event scale | Residual mix | PFC |
+|-------|-------------|----------------|-------------|-------------|-----|
+| `robot_flat` | 0 cents | 0 cents | 0.0 | 0.0 | 0.0 |
+| `speech_neutral` | 600 cents | 400 cents | 1.0 | 1.0 | 0.2 |
+| `speech_expressive` | 900 cents | 500 cents | 1.2 | 1.0 | 0.5 |
+| `pop_tight` | 400 cents | 200 cents | 0.8 | 0.3 | 0.1 |
 
-Higher expressivity means more pitch variation and wider dynamic range, but **never** more instability. This is verified by comparing jitter metrics across style levels.
+Monotonicity is enforced: `flat < neutral < expressive` in pitch variation, but **never** in instability. The test suite compares jitter metrics across style levels to verify this.
+
+## Presets
+
+Built-in presets in `voice-engine-dsp` offer ready-to-use configurations:
+
+| Preset | Correction | Hysteresis | Ramp | Use case |
+|--------|-----------|------------|------|----------|
+| `DEFAULT_CLEAN` | 1.0 | 15 cents | 30 ms | Balanced everyday correction |
+| `HARD_TUNE` | 1.0 | 0 cents (clamped to 5) | 5 ms | Robotic T-Pain effect |
+| `NO_WARBLE` | 1.0 | 25 cents | 100 ms | Conservative, artifact-free |
+| `SUBTLE` | 0.3 | default | default | Natural enhancement |
+
+The `voice-engine-core` package provides additional named presets (`HARD_TUNE_PRESET`, `NATURAL_PRESET`, `SUBTLE_PRESET`) with full analysis, stabilizer, and tuning configs. Use `normalizePreset()` to merge partial overrides with safe defaults.
+
+## Safety rails
+
+`validateAndClampConfig()` prevents dangerous configurations:
+
+- Hysteresis below 5 cents is clamped to 5 (prevents rapid pitch oscillation/warble)
+- Voicing threshold is clamped to the 100--9000 range (prevents classifying everything or nothing as voiced)
+
+`applyExpressiveness(config, amount)` scales correction strength inversely with expressiveness: amount 0.0 keeps full correction, amount 1.0 reduces correction to zero.
+
+## Prosody events
+
+Events are discrete instructions applied to the pitch curve. Each event has a type, time (frame index), strength (0--1), shape, and optional span:
+
+| Type | Effect |
+|------|--------|
+| `accent` | Raises or lowers pitch at a target frame using a raised cosine window |
+| `boundary` | Terminal pitch inflection (rising for questions, falling for statements) |
+| `reset` | Resets prosody state |
+| `deaccent` | Suppresses pitch movement in a region |
+
+Event shapes (`rise`, `fall`, `rise-fall`, `fall-rise`) control the direction of the pitch excursion. Events can be scoped to a voiced segment or an entire phrase, and clamped with a hard cutoff or a gradual fade.
